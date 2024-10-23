@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
+const orderRoutes = require("./routes/order");
 
 const port = 4000;
 
@@ -23,6 +24,7 @@ mongoose.connection.once("open", () => console.log("Now connected to MongoDB Atl
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);
 app.use('/carts', cartRoutes);
+app.use('/orders', orderRoutes);
 
 if(require.main === module){
 

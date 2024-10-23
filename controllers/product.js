@@ -225,3 +225,48 @@ module.exports.activateProduct = (req, res) => {
     });
 };
 
+module.exports.searchByName = async (req, res) => {
+
+    try {
+        console.log(req.body);
+  
+      const name = req.body.name;
+  
+      const products = await Product.find({
+        name: { $regex: name, $options: "i" }
+      });
+  
+      res.json(products);
+
+    } catch (error) {
+
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+
+    }
+};
+
+module.exports.searchByPriceRange = async (req, res) => {
+
+    try {
+        console.log(req.body)
+        
+      const { minPrice, maxPrice } = req.body;
+
+      if (!minPrice || !maxPrice) {
+        return res.status(400).json({ error: 'Both minPrice and maxPrice are required in the request body.' });
+      }
+
+      const products = await Product.find({
+        price: { $gte: minPrice, $lte: maxPrice }
+      });
+
+      res.json({ products });
+
+    } catch (error) {
+
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+
+    }
+};

@@ -152,3 +152,44 @@ module.exports.updateCartItemQuantity = async (req, res) => {
     
   }
 };
+
+module.exports.removeFromCart = async (req, res) => {
+  try {
+    const { productId } = req.params; 
+    const userId = req.user.id;
+
+    let cart = await Cart.findOne({ userId });
+
+    cart.cartItems = cart.cartItems.filter(
+      (item) => !productId.includes(item.productId)
+    );
+
+    cart.totalPrice = cart.cartItems.reduce(
+      (total, item) => total + item.subtotal,
+      0
+    );
+
+    await cart.save();
+    res.status(200).json(cart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while removing products from the cart.");
+  }
+};
+
+module.exports.clearCart = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ error: "Cart Not Found" });
+    }
+    cart.cartItems = [];
+    cart.totalPrice = 0; 
+    await cart.save();
+    res.status(200).json(cart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
